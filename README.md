@@ -48,3 +48,7 @@ The polling interval for relays and relay-switches can be configured like this:
 quinetic:
   update_interval: 45s
 ```
+
+# Credits
+
+**Huge thanks to @ReFil (and earlier upstream contributors) for the [Kinetic2MQTT](https://github.com/ReFil/Kinetic2MQTT2) bridge I heavily relied on developing this component.**

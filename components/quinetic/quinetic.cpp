@@ -14,7 +14,7 @@ void Quinetic::setup() {
   }
 
   auto *trig = this->radio_->get_packet_trigger();
-  this->packet_automation_ = new Automation<std::vector<uint8_t>, float, uint8_t>(trig);
+  this->packet_automation_ = new Automation<std::vector<uint8_t>, float, float, uint8_t>(trig);
   this->packet_automation_->add_action(new PacketForwardAction(this));
 }
 
@@ -62,8 +62,8 @@ void Quinetic::poll_next_() {
   this->set_timeout("poll_next", 100, [this]() { this->poll_next_(); });
 }
 
-void Quinetic::on_receive_raw_(const std::vector<uint8_t> &raw, float rssi, uint8_t lqi) {
-  ESP_LOGV(TAG, "RX raw=%s rssi=%.1f lqi=%u", format_hex_pretty(raw).c_str(), rssi, lqi);
+void Quinetic::on_receive_raw_(const std::vector<uint8_t> &raw, float freq_offset, float rssi, uint8_t lqi) {
+  ESP_LOGV(TAG, "RX raw=%s freq=%.1f rssi=%.1f lqi=%u", format_hex_pretty(raw).c_str(), freq_offset, rssi, lqi);
 
   if (raw.size() != 12)
     return;

@@ -47,7 +47,7 @@ class Quinetic : public PollingComponent {
   void transmit(const Message *msg);
 
  protected:
-  void on_receive_raw_(const std::vector<uint8_t> &raw, float rssi, uint8_t lqi);
+  void on_receive_raw_(const std::vector<uint8_t> &raw, float freq_offset, float rssi, uint8_t lqi);
   void on_receive_(const Message *msg, float rssi, uint8_t lqi);
   void poll_next_();
 
@@ -65,15 +65,16 @@ class Quinetic : public PollingComponent {
     return nullptr;
   }
 
-  Automation<std::vector<uint8_t>, float, uint8_t> *packet_automation_{nullptr};
+  Automation<std::vector<uint8_t>, float, float, uint8_t> *packet_automation_{nullptr};
 
-  class PacketForwardAction : public Action<std::vector<uint8_t>, float, uint8_t> {
+  class PacketForwardAction : public Action<std::vector<uint8_t>, float, float, uint8_t> {
    public:
     explicit PacketForwardAction(Quinetic *parent) : parent_(parent) {}
 
    protected:
-    void play(const std::vector<uint8_t> &packet, const float &rssi, const uint8_t &lqi) override {
-      parent_->on_receive_raw_(packet, rssi, lqi);
+    void play(const std::vector<uint8_t> &packet, const float &freq_offset, const float &rssi,
+              const uint8_t &lqi) override {
+      parent_->on_receive_raw_(packet, freq_offset, rssi, lqi);
     }
 
     Quinetic *parent_;

@@ -41,6 +41,8 @@ async def to_code(config):
     radio = await cg.get_variable(config[CONF_CC1101_ID])
     cg.add(var.set_radio(radio))
 
+    cg.add(radio.register_listener(var))
+
     # force Quinetic RF profile
     cg.add(radio.set_packet_mode(True))
     cg.add(radio.set_packet_length(12))

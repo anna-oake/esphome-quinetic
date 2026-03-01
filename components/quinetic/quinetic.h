@@ -1,7 +1,6 @@
 #pragma once
 
 #include "esphome/components/cc1101/cc1101.h"
-#include "esphome/core/automation.h"
 #include "esphome/core/component.h"
 #include "protocol.h"
 
@@ -34,13 +33,15 @@ class DeviceItem {
   }
 };
 
-class Quinetic : public PollingComponent {
+class Quinetic : public PollingComponent, public cc1101::CC1101Listener {
  public:
   void set_radio(cc1101::CC1101Component *radio) { radio_ = radio; }
 
   void setup() override;
   void dump_config() override;
   void update() override;
+  
+  void on_packet(const std::vector<uint8_t> &packet, float freq_offset, float rssi, uint8_t lqi) override;
 
   void add_device_item(DeviceItem *item) { devices_.push_back(item); }
 
@@ -64,21 +65,6 @@ class Quinetic : public PollingComponent {
         return d;
     return nullptr;
   }
-
-  Automation<std::vector<uint8_t>, float, float, uint8_t> *packet_automation_{nullptr};
-
-  class PacketForwardAction : public Action<std::vector<uint8_t>, float, float, uint8_t> {
-   public:
-    explicit PacketForwardAction(Quinetic *parent) : parent_(parent) {}
-
-   protected:
-    void play(const std::vector<uint8_t> &packet, const float &freq_offset, const float &rssi,
-              const uint8_t &lqi) override {
-      parent_->on_receive_raw_(packet, freq_offset, rssi, lqi);
-    }
-
-    Quinetic *parent_;
-  };
 };
 
 }  // namespace esphome::quinetic
